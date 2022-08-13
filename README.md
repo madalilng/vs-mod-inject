@@ -1,7 +1,7 @@
 # # vs-mod-inject
 
 create a mod-loader folder to VampireSurvivors\resources\app\.webpack\renderer
-download all these file and move to mod-loader folder the you created
+download all these file and move to mod-loader folder that you created
 
 there's an example of mod in mods folder (goku and its weapon ki)
 
