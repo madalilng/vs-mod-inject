@@ -64,24 +64,34 @@ function main(mod) {
   const { default: characters } = mod.findModule(modules.CharacterType);
   const { default: preload } = mod.findModule(modules.PreloadAssets);
 
-  characters["GOKU"] = "GOKU";
 
-  characterClass["GOKU"] = goku;
+  const preloadFunction = preload.prototype.loadAssets;
 
-  const preloadFunction = preload.prototype.preload;
-  preload.prototype.preload = function () {
+  preload.prototype.loadAssets = async function () {
+    characters["GOKU"] = "GOKU";
+    characterClass["GOKU"] = goku;
+    this["load"]["atlas"](
+      "GOKU",
+      "mod-loader/mods/goku/goku.png",
+      "mod-loader/mods/goku/goku.json"
+    );
+
     preloadFunction.apply(this);
-    preloadAssets.apply(this);
-  }
+  };
 }
 
-function preloadAssets() {
-  this["load"]["atlas"](
-    "GOKU",
-    "mod-loader/mods/goku/goku.png",
-    "mod-loader/mods/goku/goku.json"
-  );
-}
+Function.prototype.clone = function () {
+  var that = this;
+  var temp = function temporary() {
+    return that.apply(this, arguments);
+  };
+  for (var key in this) {
+    if (this.hasOwnProperty(key)) {
+      temp[key] = this[key];
+    }
+  }
+  return temp;
+};
 
 module.exports = {
   main,

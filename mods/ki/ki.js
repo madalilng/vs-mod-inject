@@ -49,7 +49,7 @@ const weaponData = [
   },
 ];
 
-async function main(mod) {
+function main(mod) {
   const { modules } = mod;
   const { default: preload } = mod.findModule(modules.PreloadAssets);
   const { default: weaponClassList } = mod.findModule(modules.WeaponClassList);
@@ -59,8 +59,6 @@ async function main(mod) {
   weaponType["KI"] = "KI";
   weaponClassList["KI"] = weaponData;
 
-  weaponClass = await classGenerator(mod);
-
   const preloadFunction = preload.prototype.preload;
   preload.prototype.preload = function () {
     preloadFunction.apply(this);
@@ -68,9 +66,10 @@ async function main(mod) {
     this["load"]["atlas"]("KI", "mod-loader/mods/ki/blasts.png", "mod-loader/mods/ki/blasts.json");
     this["load"]["audio"]("SFX_KI", "mod-loader/mods/ki/ki.ogg");
   };
-
+  weaponClass = classGenerator(mod);
   const weaponMake = weaponAtkClass.prototype.Make;
   weaponAtkClass.prototype.Make = function (...args) {
+    
     if (this["weaponType"] === "KI") {
       return new weaponClass(this, 0, 0, args[0], args[1]);
     }
@@ -79,10 +78,10 @@ async function main(mod) {
 
 }
 
-const classGenerator = async (mod) => {
+const classGenerator = (mod) => {
   const { modules } = mod
   const { default: weaponClassBase } = mod.findModule(modules.WeaponClassBase);
-  const { default: game } = await mod.findModule(modules.Game);
+  const { default: game } = mod.findModule(modules.Game);
   const { default: gameManager } = mod.findModule(modules.GameManager);
   const { default: SfxType } = mod.findModule(modules.SfxType);
 
