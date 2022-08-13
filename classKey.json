@@ -1,0 +1,46 @@
+{
+  "CharacterClass": {
+    "dec": 5597,
+    "hex": "0x15dd"
+  },
+  "SfxType": {
+    "dec": 8151,
+    "hex": "0x1fd7"
+  },
+  "WeaponClassList": {
+    "dec": 12551,
+    "hex": "0x3107"
+  },
+  "WeaponClassMake": {
+    "dec": 19101,
+    "hex": "0x4a9d"
+  },
+  "GameManager": {
+    "dec": 20739,
+    "hex": "0x5103"
+  },
+  "WeaponType": {
+    "dec": 21731,
+    "hex": "0x54e3"
+  },
+  "Game": {
+    "dec": 24327,
+    "hex": "0x5f07"
+  },
+  "WeaponClassBase": {
+    "dec": 41293,
+    "hex": "0xa14d"
+  },
+  "CharacterType": {
+    "dec": 57276,
+    "hex": "0xdfbc"
+  },
+  "BGMType": {
+    "dec": 84213,
+    "hex": "0x148f5"
+  },
+  "PreloadAssets": {
+    "dec": 87451,
+    "hex": "0x1559b"
+  }
+}
