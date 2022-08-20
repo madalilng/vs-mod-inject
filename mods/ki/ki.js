@@ -52,26 +52,28 @@ const weaponData = [
 function main(mod) {
   const { modules } = mod;
   const { default: preload } = mod.findModule(modules.PreloadAssets);
-  const { default: weaponClassList } = mod.findModule(modules.WeaponClassList);
-  const { default: weaponType } = mod.findModule(modules.WeaponType);
+  const { default: weaponClass } = mod.findModule(modules.WeaponClass);
   const { default: weaponAtkClass } = mod.findModule(modules.WeaponClassMake);
 
-  weaponType["KI"] = "KI";
-  weaponClassList["KI"] = weaponData;
+  weaponClass["KI"] = weaponData;
 
   const preloadFunction = preload.prototype.preload;
+
   preload.prototype.preload = function () {
     preloadFunction.apply(this);
     this["load"]["atlas"]("ARSENAL", "mod-loader/mods/ki/arsenal.png", "mod-loader/mods/ki/arsenal.json" );
     this["load"]["atlas"]("KI", "mod-loader/mods/ki/blasts.png", "mod-loader/mods/ki/blasts.json");
     this["load"]["audio"]("SFX_KI", "mod-loader/mods/ki/ki.ogg");
   };
-  weaponClass = classGenerator(mod);
+
+ 
+  weaponClassMod = classGenerator(mod);
+
   const weaponMake = weaponAtkClass.prototype.Make;
   weaponAtkClass.prototype.Make = function (...args) {
     
     if (this["weaponType"] === "KI") {
-      return new weaponClass(this, 0, 0, args[0], args[1]);
+      return new weaponClassMod(this, 0, 0, args[0], args[1]);
     }
     return weaponMake.apply(this, args);
   }
@@ -80,6 +82,7 @@ function main(mod) {
 
 const classGenerator = (mod) => {
   const { modules } = mod
+
   const { default: weaponClassBase } = mod.findModule(modules.WeaponClassBase);
   const { default: game } = mod.findModule(modules.Game);
   const { default: gameManager } = mod.findModule(modules.GameManager);

@@ -19,25 +19,12 @@ class Mod {
   }
 
   findModule(className) {
-    const importer =
-      (this._modules["arg1"] && this._modules["arg1"]["__importDefault"]) ||
-      function (_class) {
-        return _class && _class["__esModule"] ? _class : { default: _class };
-      };
-
-    return importer(this._modules["arg4"](className));
+    return this._modules(className)
   }
 
-  inject(_class, args) {
-    if (this.index === 1) {
-      this.index++;
-      this._modules = args;
-      this.main();
-      return _class;
-    } else {
-      this.index++;
-      return _class;
-    }
+  inject(modules) {
+    this._modules = modules;
+    this.main();
   }
 }
 

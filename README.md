@@ -13,37 +13,13 @@ add these code to the top part of the main.bundle.js
 
     const { Mod } = require("./mod-loader/mod.js");
     const mod = new Mod();
-then find `_0x4aa3a4(_0x3bbdd2)`
 
-edit this line.
+then find `_0xc95609 = _0x3862c8["O"](_0xc95609);`
 
-from
+then add this `mod.inject(_0x3862c8);`
 
-    return ( 
-        _0x1511fa[_0x3bbdd2]["call"](
-        _0x13f662[_0x15cb4b(0xa81)],
-        _0x13f662,
-        _0x13f662[_0x15cb4b(0xa81)],
-        _0x4aa3a4
-    ),
+it should look like
 
-to
-
-    const  ret = (
-	    _0x1511fa[_0x3bbdd2]["call"](
-	    _0x13f662[_0x15cb4b(0xa81)],
-	    _0x13f662,
-	    _0x13f662[_0x15cb4b(0xa81)],
-	    _0x4aa3a4
-	),
-    _0x13f662[_0x15cb4b(0xa81)]
-    );
-    
-    return  mod.inject(
-	    ret, {
-		    arg1:_0x13f662[_0x15cb4b(0xa81)],
-		    arg2:_0x13f662,
-		    arg3:_0x13f662[_0x15cb4b(0xa81)],
-		    arg4:_0x4aa3a4,
-	    }
-    );
+    _0xc95609 = _0x3862c8["O"](_0xc95609);
+    mod.inject(_0x3862c8);
+    })();

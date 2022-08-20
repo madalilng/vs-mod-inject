@@ -58,17 +58,14 @@ goku = [
 ];
 
 function main(mod) {
-  //   const weaponType = mod.findModule("WeaponType");
   const { modules } = mod;
   const { default: characterClass } = mod.findModule(modules.CharacterClass);
-  const { default: characters } = mod.findModule(modules.CharacterType);
   const { default: preload } = mod.findModule(modules.PreloadAssets);
 
 
   const preloadFunction = preload.prototype.loadAssets;
 
   preload.prototype.loadAssets = async function () {
-    characters["GOKU"] = "GOKU";
     characterClass["GOKU"] = goku;
     this["load"]["atlas"](
       "GOKU",
