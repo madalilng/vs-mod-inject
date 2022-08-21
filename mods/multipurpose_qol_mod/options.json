@@ -1,5 +1,5 @@
 {
-  "debugModeEnabled": false,
+  "debugModeEnabled": true,
   "limitBreakTooltipEnabled": true,
   "dpsTooltipEnabled": true,
   "killsPSEnabled": true,

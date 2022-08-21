@@ -9,9 +9,7 @@ class Ticker extends BaseHigherOrderUIElement {
         super(config);
         this.varName = config.varName
 
-        this.targetObj = config.defaultPlayerOptionsUsed
-            ? this.game.default.Core.PlayerOptions
-            : this.game.default.Core.PlayerOptions.qolModOptions
+        this.targetObj = config.options
 
         this.min = config.min === undefined ? 1 : config.min
         this.max = config.max === undefined ? 10 : config.max

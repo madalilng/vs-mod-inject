@@ -1,6 +1,14 @@
 const layouts = require("./layouts_module/Layouts");
 const managers = require("./managers_module/Managers");
-const qolOptions = require("./options.json");
+const qolData = require("./options.json");
+
+const qolOptions = new Proxy(qolData, {
+  set: function (target, key, value) {
+    console.log(`${key} set from ${target[key]} to ${value}`);
+    target[key] = value;
+    return true;
+  },
+});
 
 Object.defineProperty(String.prototype, "capitalize", {
   value: function () {
@@ -80,8 +88,6 @@ function main(mod) {
   const { default: GameManager } = mod.findModule(modules.GameManager);
   const { default: PreloadAssets } = mod.findModule(modules.PreloadAssets);
 
-  makeWeaponUIClass(mod);
-
   const GameManagerInitGame = GameManager.prototype.InitGame;
   GameManager.prototype.InitGame = function (...args) {
     GameManagerInitGame.apply(this, args);
@@ -100,12 +106,16 @@ function main(mod) {
     );
   };
 
+  extendWeaponUIClass(mod);
   extendSceneManager(mod);
-  const GM = mod.findModule(modules.Game);
+
   const interval = setInterval(function () {
+    const GM = mod.findModule(modules.Game);
     if (GM.default.Core) {
       clearInterval(interval);
       modScene = makeModScene(mod);
+      addDebugMode(GM);
+      // GM.default.Core.Game.scene.add("ModOptionsScene2222", new mainScene());
       GM.default.Core.Game.scene.add("ModOptionsScene", new modScene());
       GM.default.Core.SceneManager.SetModOptionScene();
     } else {
@@ -114,6 +124,159 @@ function main(mod) {
   }, 1000);
 }
 
+const addDebugMode = (GM) => {
+  const createMainScene = GM.default.Core.SceneManager.MainScene.create;
+  GM.default.Core.SceneManager.MainScene.create = function () {
+    if (qolOptions.debugModeEnabled) {
+      this.input.keyboard
+        .addKey(Phaser.Input.Keyboard.KeyCodes.B)
+        .on("down", () => {
+          GM.default.Core.debug_destructibles();
+        });
+
+      this.input.keyboard
+        .addKey(Phaser.Input.Keyboard.KeyCodes.X)
+        .on("down", () => {
+          GM.default.Core.Player.AddXP(
+            GM.default.Core.LevelUpFactory.XpRequiredToLevelUp -
+              GM.default.Core.LevelUpFactory.PreviousXpRequiredToLevelUp
+          ),
+            GM.default.Core.CheckForLevelUp();
+        });
+
+      this.input.keyboard
+        .addKey(Phaser.Input.Keyboard.KeyCodes.Z)
+        .on("down", () => {
+          for (
+            let weapon = GM.default.Core.LevelUpFactory.WeaponStore.length - 1;
+            weapon >= 0;
+            weapon--
+          ) {
+            const selectedWeapon =
+              GM.default.Core.LevelUpFactory.WeaponStore[weapon];
+            GM.default.Core.LevelWeaponUp(selectedWeapon),
+              GM.default.Core.Player.LevelUp();
+          }
+          GM.default.Core.Player.xp =
+            GM.default.Core.LevelUpFactory.PreviousXpRequiredToLevelUp;
+        });
+
+      this.input.keyboard
+        .addKey(Phaser.Input.Keyboard.KeyCodes.P)
+        .on("down", () => {
+          GM.default.Core.TimeStop();
+        });
+
+      this.input.keyboard
+        .addKey(Phaser.Input.Keyboard.KeyCodes.L)
+        .on("down", () => {
+          GM.default.Core.PlayerOptions.AddCoins(1000);
+          GM.default.Core.MainUI.UpdateCoins();
+        });
+
+      this.input.keyboard
+        .addKey(Phaser.Input.Keyboard.KeyCodes.M)
+        .on("down", () => {
+          GM.default.Core.Player.moveSpeed =
+            10 == GM.default.Core.Player.moveSpeed ? 1.2 : 10;
+        });
+
+      this.input.keyboard
+        .addKey(Phaser.Input.Keyboard.KeyCodes.G)
+        .on("down", () => {
+          GM.default.Core.debug_Treasure();
+        }),
+        this.input.keyboard
+          .addKey(Phaser.Input.Keyboard.KeyCodes.N)
+          .on("down", () => {
+            GM.default.Core.debug_Arcana();
+          }),
+        this.input.keyboard
+          .addKey(Phaser.Input.Keyboard.KeyCodes.J)
+          .on("down", () => {
+            GM.default.Core.debug_CharCoffin();
+          }),
+        this.input.keyboard
+          .addKey(Phaser.Input.Keyboard.KeyCodes.I)
+          .on("down", () => {
+            GM.default.Core.Player.SetInvulForMilliSeconds(
+              Number.MAX_SAFE_INTEGER
+            ),
+              GM.default.Core.Player.restoreTint(),
+              this.time.addEvent({
+                delay: 100,
+                callback: () => {
+                  GM.default.Core.Player.restoreTint();
+                },
+              });
+          }),
+        this.input.keyboard
+          .addKey(Phaser.Input.Keyboard.KeyCodes.H)
+          .on("down", () => {
+            GM.default.Core.Player.RecoverHp(9999, false);
+          }),
+        this.input.keyboard
+          .addKey(Phaser.Input.Keyboard.KeyCodes.K)
+          .on("down", () => {
+            GM.default.Core.RosaryDamage();
+          }),
+        this.input.keyboard
+          .addKey(Phaser.Input.Keyboard.KeyCodes.V)
+          .on("down", () => {
+            GM.default.Core.TurnOnVacuum();
+          }),
+        this.input.keyboard
+          .addKey(Phaser.Input.Keyboard.KeyCodes.O)
+          .on("down", () => {
+            GM.default.Core.Player.OnDeath();
+          }),
+        this.input.keyboard
+          .addKey(Phaser.Input.Keyboard.KeyCodes.E)
+          .on("down", () => {
+            GM.default.Core.debug_SpawnEnemies();
+          }),
+        this.input.keyboard
+          .addKey(Phaser.Input.Keyboard.KeyCodes.Q)
+          .on("down", () => {
+            GM.default.Core.SceneManager.EnterWeaponSelection();
+          }),
+        this.input.keyboard
+          .addKey(Phaser.Input.Keyboard.KeyCodes.T)
+          .on("down", () => {
+            GM.default.Core.debug_NextMinute();
+          }),
+        this.input.keyboard
+          .addKey(Phaser.Input.Keyboard.KeyCodes.F)
+          .on("down", () => {
+            //(GM.default._0x11db86.default[_0x1777f3.default.STATS_TREASURE_3].pickedupAmount += 1),
+            GM.default.Core.debug_FireAll();
+          }),
+        this.input.on(
+          "wheel",
+          function (...args) {
+            (this.cameras.main.zoom -= 0.005 * this.cameras.main.zoom),
+              (this.cameras.main.zoom = Math.min(
+                Math.max(this.cameras.main.zoom, 0.05),
+                4
+              ));
+          }.bind(this)
+        );
+      var pauseBtn = this.add
+        .image(0, 120, "UI", "pause.png")
+        .setScrollFactor(0)
+        .setScale(3)
+        .setInteractive()
+        .setAlpha(0.3)
+        .setOrigin(0, 0);
+      GM["DEBUG_INFO"] || pauseBtn.setAlpha(0.001),
+        pauseBtn.on("pointerdown", () => {
+          GM.default.Core.SceneManager.EnterDebug();
+        });
+    }
+    createMainScene.apply(this);
+  };
+};
+
 const extendSceneManager = (mod) => {
   const { modules } = mod;
   const SceneManager = mod.findModule(modules.SceneManager);
@@ -121,11 +284,10 @@ const extendSceneManager = (mod) => {
   const { default: NineSliceConfig } = mod.findModule(modules.NineSliceConfig);
 
   // console.log(mod.cleanFunction(modules.SceneManager));
-  // console.log(SceneManager.default)
 
   SceneManager.default = class extends SceneManager.default {
-    constructor(name, scene) {
-      super(name, scene);
+    constructor(game, scene) {
+      super(game, scene);
     }
 
     SetModOptionScene() {
@@ -191,7 +353,15 @@ const extendSceneManager = (mod) => {
 
 const makeModScene = (mod) => {
   const { modules } = mod;
+  const { default: NineSliceConfig } = mod.findModule(modules.NineSliceConfig);
   const { default: WeaponList } = mod.findModule(modules.WeaponList);
+  const { default: gameManager } = mod.findModule(modules.GameManager);
+  const { default: SceneManager } = mod.findModule(modules.SceneManager);
+  const { default: Utils } = mod.findModule(modules.Utils);
+  const GM = mod.findModule(modules.Game);
+
+  // console.log(mod.cleanFunction(0x1715a));
+
   return class extends window.Phaser.Scene {
     constructor() {
       super({ key: "ModOptionsScene" });
@@ -209,10 +379,228 @@ const makeModScene = (mod) => {
     }
 
     preload() {}
+    create() {
+      const plugins = mod.findModule(0x16c14);
+      const screenWidth = GM.SAFEAREA.width * gameManager.RPixelScale;
+      const screenHeight = (GM.SAFEAREA.height - 64) * gameManager.RPixelScale;
+      const height = screenHeight * gameManager.PixelScale;
+
+      this.background = new plugins.NineSlice(
+        this,
+        NineSliceConfig.MenuBackground,
+        {
+          x: 0,
+          y: 0,
+          width: screenWidth,
+          height: screenHeight,
+        }
+      );
+
+      this.background.setPosition(GM.SAFEAREA.centerX, height);
+      this.background.setOrigin(0.5, 1);
+      this.background.setScale(gameManager.PixelScale);
+      this.add.existing(this.background);
+      this.background.setInteractive();
+
+      this.header = this.add
+        .text(GM.SAFEAREA.centerX, 33, "Mod Options", {})
+        .setScale(2 * gameManager.PixelScale)
+        .setOrigin(0.5);
+
+      this.pageManager = new managers.PageManager({
+        game: GM,
+        options: qolOptions,
+        scene: this,
+        line: 7,
+        pages: [
+          // First page
+          new layouts.Page([
+            // Debug mode toggle
+            new layouts.TextCheckboxLayout({
+              game: GM,
+              options: qolOptions,
+              scene: this,
+              varName: "debugModeEnabled",
+              text: "Debug mode",
+              line: 1,
+            }),
+
+            // Limit break tooltip toggle
+            new layouts.TextCheckboxLayout({
+              game: GM,
+              options: qolOptions,
+              scene: this,
+              varName: "limitBreakTooltipEnabled",
+              text: "Limit break stats tooltip",
+              line: 2,
+            }),
+
+            // Colored chests toggle
+            new layouts.TextCheckboxLayout({
+              game: GM,
+              options: qolOptions,
+              scene: this,
+              varName: "coloredChestsEnabled",
+              text: "Colored chests",
+              line: 3,
+            }),
+
+            // Starting arcanas ticker
+            new layouts.TextTickerLayout({
+              game: GM,
+              options: qolOptions,
+              scene: this,
+              varName: "startingArcanas",
+              min: 1,
+              max: 3,
+              text: "Starting arcanas",
+              line: 4,
+            }),
+
+            // Max weapons/passives tickers
+            new layouts.TextTickerLayout({
+              game: GM,
+              options: qolOptions,
+              scene: this,
+              varName: "maxPowerUpWeapons",
+              min: 1,
+              max: this._maxPassives,
+              text: "Max passives",
+              line: 5,
+            }),
+
+            // Skip penta chest toggle
+            new layouts.TextCheckboxLayout({
+              game: GM,
+              options: qolOptions,
+              scene: this,
+              varName: "skipPentaChestsEnabled",
+              text: "Skip Penta Chests",
+              line: 6,
+            }),
+          ]),
+
+          // Second page
+          new layouts.Page([
+            // Spawn chests on player toggle
+            new layouts.TextCheckboxLayout({
+              game: GM,
+              options: qolOptions,
+              scene: this,
+              varName: "spawnChestsOnPlayerEnabled",
+              text: "Spawn Chests On Player",
+              line: 1,
+            }),
+
+            // Dps tooltip settings
+            new layouts.TextCheckboxTextTickerLayout({
+              game: GM,
+              options: qolOptions,
+              scene: this,
+              checkboxText: "Dps tooltip",
+              checkboxVarName: "dpsTooltipEnabled",
+
+              tickerText: "Track time(s)",
+              tickerVarName: "dpsQueueSize",
+              tickerMin: 3,
+              tickerMax: 9,
+
+              line: 2,
+            }),
+
+            // Kills ps settings
+            new layouts.TextCheckboxTextTickerLayout({
+              game: GM,
+              options: qolOptions,
+              scene: this,
+              checkboxText: "Kills/s",
+              checkboxVarName: "killsPSEnabled",
+
+              tickerText: "Track time(s)",
+              tickerVarName: "killsPSQueueSize",
+              tickerMin: 3,
+              tickerMax: 9,
+
+              line: 3,
+            }),
+
+            // Gold ps settings
+            new layouts.TextCheckboxTextTickerLayout({
+              game: GM,
+              options: qolOptions,
+              scene: this,
+              checkboxText: "Gold/s",
+              checkboxVarName: "goldPSEnabled",
+
+              tickerText: "Track time(s)",
+              tickerVarName: "goldPSQueueSize",
+              tickerMin: 3,
+              tickerMax: 9,
+
+              line: 4,
+            }),
+          ]),
+        ],
+      });
+
+      this.UI_topBar = this.scene.get("UI_topBar");
+      this.UI_mainMenu = this.scene.get("UI_mainMenu");
+
+      const _children = this.children.getAll();
+      this.children.removeAll();
+
+      this.SceneContainer = this.add.container(0, 0, _children);
+      this.SceneContainer.setScale((0, GM.GET_RATIO)());
+
+      Utils.CalculateAndSetContainerSize(this.SceneContainer);
+      this.SceneContainer.y =
+        this.renderer.height - this.SceneContainer.displayHeight;
+      this.EnableInput();
+      this.ReadPlayerOptions();
+
+      this.MakeUIGrid(this.UI_topBar.BackButton);
+    }
+
+    EnableInput() {
+      this.pageManager.EnableInput();
+    }
+
+    ReadPlayerOptions() {
+      this.pageManager.ReadPlayerOptions();
+    }
+
+    MakeUIGrid(UI) {
+      let overlay = GM.default.Core.SceneManager.UI_overlayScene;
+      overlay.MakeUIGrid(1, 9, false),
+        overlay.UI_grid.SetContents(0, 0, this.UI_topBar.BackButton),
+        overlay.ToggleCursorsVisibility(true),
+        overlay.UI_grid.SelectGameObject(UI),
+        (overlay.UI_selected = UI),
+        GM.default.Core.SceneManager.scene.bringToTop(overlay),
+        (overlay.OnCancelCallback = () => {
+          var backBtn, btnEvnt, callback;
+          null ===
+            (callback =
+              null ===
+                (btnEvnt =
+                  null === (backBtn = this.UI_topBar.BackButton) ||
+                  void 0 === backBtn
+                    ? void 0
+                    : backBtn._events) || void 0 === btnEvnt
+                ? void 0
+                : btnEvnt.pointerdown) ||
+            void 0 === callback ||
+            callback.fn();
+        });
+    }
+
+    DestroyUIGrid() {
+      GM.Core.SceneManager.UI_overlayScene.DestroyGrid();
+    }
   };
 };
 
-const makeWeaponUIClass = (mod) => {
+const extendWeaponUIClass = (mod) => {
   const { modules } = mod;
 
   const WeaponIconUI = mod.findModule(modules.WeaponIconUI);

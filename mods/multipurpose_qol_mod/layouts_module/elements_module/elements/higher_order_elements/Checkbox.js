@@ -7,9 +7,7 @@ class Checkbox extends BaseHigherOrderUIElement{
         super(config);
         this.varName = config.varName
 
-        this.targetObj = config.defaultPlayerOptionsUsed
-            ? this.game.default.Core.PlayerOptions
-            : this.game.default.Core.PlayerOptions.qolModOptions
+        this.targetObj = config.options
 
         this.checkbox = new Image(this.mergeConfigs(config, {
             textureName: 'UI',
