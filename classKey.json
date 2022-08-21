@@ -46,5 +46,17 @@
   "WeaponIconUI": {
     "dec": 99909,
     "hex": "0x18645"
+  },
+  "SceneManager": {
+    "dec": 98145,
+    "hex": "0x17f61"
+  },
+  "NineSliceConfig": {
+    "dec": 52398,
+    "hex": "0xccae"
+  },
+  "OptionScene": {
+    "dec": 34925,
+    "hex": "0x886d"
   }
 }

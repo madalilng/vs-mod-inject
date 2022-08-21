@@ -78,10 +78,8 @@ class Queue {
 function main(mod) {
   const { modules } = mod;
   const { default: GameManager } = mod.findModule(modules.GameManager);
+  const { default: PreloadAssets } = mod.findModule(modules.PreloadAssets);
 
-//   console.log(mod.cleanFunction(0xe49a));
-  //   console.log(GameManager)
-  makeWeaponClass(mod);
   makeWeaponUIClass(mod);
 
   const GameManagerInitGame = GameManager.prototype.InitGame;
@@ -89,26 +87,136 @@ function main(mod) {
     GameManagerInitGame.apply(this, args);
     this.MainUI.ShowPassiveBlocks(6 - qolOptions.maxPowerUpWeapons);
   };
+
+  const preloadFunction = PreloadAssets.prototype.preload;
+
+  PreloadAssets.prototype.preload = function () {
+    preloadFunction.apply(this);
+
+    this.load.atlas(
+      "qolModAtlas",
+      "./mod-loader/mods/multipurpose_qol_mod/assets/qolModAtlas.png",
+      "./mod-loader/mods/multipurpose_qol_mod/assets/qolModAtlas.json"
+    );
+  };
+
+  extendSceneManager(mod);
+  const GM = mod.findModule(modules.Game);
+  const interval = setInterval(function () {
+    if (GM.default.Core) {
+      clearInterval(interval);
+      modScene = makeModScene(mod);
+      GM.default.Core.Game.scene.add("ModOptionsScene", new modScene());
+      GM.default.Core.SceneManager.SetModOptionScene();
+    } else {
+      console.log("gm empty");
+    }
+  }, 1000);
 }
 
-const makeWeaponClass = (mod) => {
+const extendSceneManager = (mod) => {
   const { modules } = mod;
-  const WeaponClass = mod.findModule(modules.WeaponClass);
-  WeaponClass.default = class extends WeaponClass.default { 
-    constructor( bulletType , _bool = true) {
-        super(bulletType, _bool)
-        console.log("weapon class");
-    }
-  }
+  const SceneManager = mod.findModule(modules.SceneManager);
+  const { default: gameManager } = mod.findModule(modules.GameManager);
+  const { default: NineSliceConfig } = mod.findModule(modules.NineSliceConfig);
 
-  console.log(WeaponClass)
+  // console.log(mod.cleanFunction(modules.SceneManager));
+  // console.log(SceneManager.default)
+
+  SceneManager.default = class extends SceneManager.default {
+    constructor(name, scene) {
+      super(name, scene);
+    }
+
+    SetModOptionScene() {
+      this.ModOptionsScene = this.scene.get("ModOptionsScene");
+    }
+
+    OptionsFromMainMenu() {
+      super.OptionsFromMainMenu();
+      const plugins = mod.findModule(0x16c14); // cant find plugin manager
+      const { height, width } = this.OptionsScene.renderer;
+
+      const ModOptionsButton = new plugins.NineSlice(
+        this.OptionsScene,
+        NineSliceConfig["OptionsButton"],
+        {
+          x: width - 8 - 100,
+          y: height - 128 - 74,
+          width: 100,
+          height: 32,
+        }
+      )
+        .setScale(2 * gameManager.PixelScale)
+        .setOrigin(0.5);
+      this.OptionsScene.add.existing(ModOptionsButton);
+
+      const ModOptionsText = this.OptionsScene.add
+        .text(ModOptionsButton.x, ModOptionsButton.y, "Mod Options", {
+          align: "center",
+        })
+        .setScale(1 * gameManager.PixelScale)
+        .setOrigin(0.5);
+
+      ModOptionsText.setVisible(true);
+
+      ModOptionsButton.setInteractive();
+
+      ModOptionsButton.on("pointerdown", () => {
+        this.ModOptionsFromOptions();
+      });
+    }
+
+    ModOptionsFromOptions() {
+      this.UI_overlayScene.DestroyGrid(),
+        this.scene.launch(this.ModOptionsScene),
+        this.scene.bringToTop(this.ModOptionsScene),
+        this.scene.pause(this.OptionsScene),
+        this.scene.setVisible(false, this.OptionsScene),
+        this.UI_topBar.EnableBack(this.ExitModOptions.bind(this)),
+        this.UI_topBar.DisableOptions(),
+        this.scene.bringToTop(this.UI_overlayScene);
+    }
+    ExitModOptions() {
+      this.UI_overlayScene.DestroyGrid(),
+        this.scene.stop(this.ModOptionsScene),
+        this.scene.resume(this.IntroScene),
+        this.scene.setVisible(false, this.ModOptionsScene),
+        this.IntroScene.MakeUIGrid(this.IntroScene.UI_topBar.OptionsButton),
+        this.UI_topBar.EnableOptions(this.OptionsFromMainMenu.bind(this)),
+        this.UI_topBar.DisableBack();
+    }
+  };
+};
+
+const makeModScene = (mod) => {
+  const { modules } = mod;
+  const { default: WeaponList } = mod.findModule(modules.WeaponList);
+  return class extends window.Phaser.Scene {
+    constructor() {
+      super({ key: "ModOptionsScene" });
+
+      let weapons = [];
+
+      for (const weapon in WeaponList) {
+        weapons.push(WeaponList[weapon][0]);
+      }
+
+      this._maxWeapons = weapons.filter(
+        (el) => !el.isSpecialOnly && !el.isPowerUp && !el.isEvolution
+      ).length;
+      this._maxPassives = weapons.filter((el) => el.isPowerUp).length;
+    }
+
+    preload() {}
+  };
 };
 
 const makeWeaponUIClass = (mod) => {
   const { modules } = mod;
 
   const WeaponIconUI = mod.findModule(modules.WeaponIconUI);
-  const { GM } = mod.findModule(modules.Game);
+  const { default: GM } = mod.findModule(modules.Game);
 
   WeaponIconUI.default = class extends WeaponIconUI.default {
     constructor(args) {
@@ -217,9 +325,9 @@ const makeWeaponUIClass = (mod) => {
 
       if (qolOptions.dpsTooltipEnabled) {
         GM.Core.Weapons.forEach((weapon) => {
-        //   weapon.damageQueue.enqueue(
-        //     weapon.stats_inflictedDamage - weapon.damageQueue.lifetimeSum
-        //   );
+          //   weapon.damageQueue.enqueue(
+          //     weapon.stats_inflictedDamage - weapon.damageQueue.lifetimeSum
+          //   );
         });
       }
     }
