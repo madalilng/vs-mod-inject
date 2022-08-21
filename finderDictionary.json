@@ -1,0 +1,18 @@
+{
+  "Game": ["parent", "phaser-game"],
+  "PreloadAssets": ["this[\"load\"][\"atlas\"]", "assets/lang/powerUpLang.json"],
+  "CharacterClass": ["startingWeapon", "surname", "newAntonio_01.png"],
+  "BGMType": ["BGM_Forest", "BGM_Library", "BGMType"],
+  "WeaponClassBase": ["Phaser", "Physics", "Arcade", "Sprite", "ball"],
+  "WeaponClass": ["stats_inflictedDamage", "stats_getDPS", "intervalDependsOnDuration"],
+  "WeaponList": ["evoSynergy", "Whip.png"],
+  "WeaponClassMake": ["Phaser[\"GameObjects\"][\"Group\"]", "Make", "weaponType"],
+  "GameManager": ["GameManager", "BGM_Forest", "RunCoins"],
+  "SfxType": ["SfxType", "ClickOut", "FireExplosion"],
+  "PlayerOptions": ["DefinitelyNotSaveDataSecretKey", "exportGameData"],
+  "WeaponIconUI": ["WeaponIconUI", "AddWeaponIcon"],
+  "SceneManager": ["OptionsFromMainMenu","LaunchUIOverlay"],
+  "NineSliceConfig": ["NSliceConfig", "OptionsButton", "button_c9_normal.png"],
+  "OptionScene": ["JOYSTICK_toggle", "RestoreBackupButton"],
+  "Utils": ["MyUtils", "LerpColor", "CalculateAndSetContainerSize"]
+}
