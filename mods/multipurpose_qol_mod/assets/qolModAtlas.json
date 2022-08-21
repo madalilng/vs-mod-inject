@@ -1,0 +1,79 @@
+{
+    "textures": [
+        {
+            "image": "qolModAtlas.png",
+            "format": "RGBA8888",
+            "size": {
+                "w": 17,
+                "h": 46
+            },
+            "scale": 1,
+            "frames": [
+                {
+                    "filename": "BoxOpen.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 15
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 15
+                    },
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 15
+                    }
+                },
+                {
+                    "filename": "BoxOpen3.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 15
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 15
+                    },
+                    "frame": {
+                        "x": 0,
+                        "y": 15,
+                        "w": 16,
+                        "h": 15
+                    }
+                },
+                {
+                    "filename": "BoxOpen4.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 15
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 15
+                    },
+                    "frame": {
+                        "x": 0,
+                        "y": 30,
+                        "w": 16,
+                        "h": 15
+                    }
+                }
+            ]
+        }
+    ],
+    "meta": {}
+}

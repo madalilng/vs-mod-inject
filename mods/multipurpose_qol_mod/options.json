@@ -1,0 +1,17 @@
+{
+  "debugModeEnabled": false,
+  "limitBreakTooltipEnabled": true,
+  "dpsTooltipEnabled": true,
+  "killsPSEnabled": true,
+  "goldPSEnabled": true,
+  "skipPentaChestsEnabled": true,
+  "spawnChestsOnPlayerEnabled": true,
+  "coloredChestsEnabled": true,
+
+  "startingArcanas": 1,
+  "maxPowerUpWeapons": 3,
+
+  "killsPSQueueSize": 5,
+  "goldPSQueueSize": 5,
+  "dpsQueueSize": 5
+}

@@ -52,10 +52,10 @@ const weaponData = [
 function main(mod) {
   const { modules } = mod;
   const { default: preload } = mod.findModule(modules.PreloadAssets);
-  const { default: weaponClass } = mod.findModule(modules.WeaponClass);
+  const { default: WeaponList } = mod.findModule(modules.WeaponList);
   const { default: weaponAtkClass } = mod.findModule(modules.WeaponClassMake);
 
-  weaponClass["KI"] = weaponData;
+  WeaponList["KI"] = weaponData;
 
   const preloadFunction = preload.prototype.preload;
 

@@ -7,7 +7,7 @@
     "dec": 8151,
     "hex": "0x1fd7"
   },
-  "WeaponClass": {
+  "WeaponList": {
     "dec": 12551,
     "hex": "0x3107"
   },
@@ -27,6 +27,10 @@
     "dec": 41293,
     "hex": "0xa14d"
   },
+  "WeaponClass": {
+    "dec": 58522,
+    "hex": "0xe49a"
+  },
   "BGMType": {
     "dec": 84213,
     "hex": "0x148f5"
@@ -34,5 +38,13 @@
   "PreloadAssets": {
     "dec": 87451,
     "hex": "0x1559b"
+  },
+  "PlayerOptions": {
+    "dec": 96405,
+    "hex": "0x17895"
+  },
+  "WeaponIconUI": {
+    "dec": 99909,
+    "hex": "0x18645"
   }
 }
